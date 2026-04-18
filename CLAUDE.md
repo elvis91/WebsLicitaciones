@@ -2,6 +2,32 @@
 
 Instrucciones para que Claude Code ejecute **end-to-end** la publicación de un sitio de transparencia cuando el usuario entrega uno o más PDFs de contrato.
 
+## Credenciales y acceso (pre-cargado)
+
+```
+SSH Hostinger:  ssh -p 65002 -i ~/.ssh/id_ed25519 u925954286@88.223.84.32
+Host:           88.223.84.32
+Puerto:         65002
+Usuario:        u925954286
+Llave privada:  C:\Users\elvis\.ssh\id_ed25519   (sin passphrase)
+Ruta dominios:  /home/u925954286/domains/
+Notion master:  342a31f82a7c81098503fb4d6b034652
+GitHub repo:    elvis91/WebsLicitaciones
+Dominio base:   licitacionesgt.com  (nameservers en Hostinger → SSL automático)
+```
+
+**Primera acción en cada sesión nueva**, sin pedir permiso: smoke test SSH.
+```bash
+ssh -p 65002 -i ~/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=10 \
+    u925954286@88.223.84.32 "ls /home/u925954286/domains/ | wc -l"
+```
+Si falla → detenerse y pedir que el usuario valide la llave. Si devuelve un número → continuar.
+
+## Política de autonomía
+
+- **No pedir confirmación** para: conexiones SSH de solo lectura, `mkdir`, `scp` de archivos nuevos, lectura de PDFs, lectura Notion, generar `default.php` local.
+- **Sí pedir confirmación** solo para: sobrescribir un `default.php` ya existente en producción, borrar fotos remotas, cambios que afecten sitios en producción fuera del NOG actual.
+
 ## Disparador
 
 El usuario sube/menciona uno o más **PDFs de contrato administrativo** (típicamente con formato `NNNNNNNN Contrato XX-AAAA ... .pdf`, donde `NNNNNNNN` es el NOG) y además puede indicar una carpeta con **fotos organizadas por fecha**.
@@ -30,20 +56,20 @@ python scripts/rename_folders.py "<ruta_local_con_fotos>"
 Resultado esperado: carpetas `imagenes/YYYY-MM-DD/` con `.jpg`/`.jpeg`/`.png`.
 
 ### 4. Crear el subdominio en Hostinger
-Dominio **siempre** bajo `licitacionesgt.com`:
+Dominio **siempre** bajo `licitacionesgt.com`: `nog<NOG>.licitacionesgt.com`.
 
-```
-nog<NOG>.licitacionesgt.com
-```
+Intento 1 — **vía MCP Claude_in_Chrome** (browser automation):
+1. `navigate` a `https://hpanel.hostinger.com/websites`.
+2. Click en dropdown **Add website → Empty website**.
+3. Escribir dominio, click **Use it**.
+4. Esperar redirect a onboarding exitoso.
 
-Hostinger panel: **Websites → Add website (dropdown) → Empty website →** escribir el dominio **→ Use it**.
+Intento 2 — si el browser MCP no está disponible: pedirle al usuario que cree el website y pausar hasta confirmación.
 
-Si no hay acceso al panel vía MCP/browser, pedirle al usuario que lo cree y continuar cuando confirme.
-
-Verificar por SSH que existe la ruta:
+Verificar por SSH que la ruta existe antes de seguir:
 ```bash
 ssh -p 65002 -i ~/.ssh/id_ed25519 u925954286@88.223.84.32 \
-  "ls -d /home/u925954286/domains/nog<NOG>.licitacionesgt.com/public_html"
+  "ls -d /home/u925954286/domains/nog<NOG>.licitacionesgt.com/public_html 2>&1"
 ```
 
 ### 5. Desplegar archivos
