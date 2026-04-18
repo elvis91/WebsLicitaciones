@@ -2,6 +2,29 @@
 
 Instrucciones para que Claude Code ejecute **end-to-end** la publicación de un sitio de transparencia cuando el usuario entrega uno o más PDFs de contrato.
 
+## MCPs recomendados para la sesión
+
+| MCP | Para qué | Requerido |
+|---|---|---|
+| `notion` | Leer/actualizar la página master | Sí |
+| `Claude_in_Chrome` | Crear websites en hPanel UI (único flujo para subdomains) | Sí |
+| `hostinger-api-mcp` | Verificar websites creados, gestionar DNS si hace falta | Opcional |
+
+Config de `hostinger-api-mcp` en `~/.claude.json`:
+```json
+{
+  "mcpServers": {
+    "hostinger": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["hostinger-api-mcp@latest"],
+      "env": { "API_TOKEN": "<TOKEN_DEL_USUARIO>" }
+    }
+  }
+}
+```
+Token: hPanel → **Account → API**. Node.js v24+ requerido.
+
 ## Credenciales y acceso (pre-cargado)
 
 ```
@@ -58,6 +81,8 @@ Resultado esperado: carpetas `imagenes/YYYY-MM-DD/` con `.jpg`/`.jpeg`/`.png`.
 ### 4. Crear el subdominio en Hostinger
 Dominio **siempre** bajo `licitacionesgt.com`: `nog<NOG>.licitacionesgt.com`.
 
+**Nota importante sobre la API Hostinger**: la API oficial (`hostinger-api-mcp`) **no expone endpoint para crear subdomains** bajo un dominio propio. Solo `POST /websites` que requiere `order_id` y aplica a dominios nuevos, no a subdomains. Por lo tanto la creación sigue requiriendo panel UI.
+
 Intento 1 — **vía MCP Claude_in_Chrome** (browser automation):
 1. `navigate` a `https://hpanel.hostinger.com/websites`.
 2. Click en dropdown **Add website → Empty website**.
@@ -65,6 +90,14 @@ Intento 1 — **vía MCP Claude_in_Chrome** (browser automation):
 4. Esperar redirect a onboarding exitoso.
 
 Intento 2 — si el browser MCP no está disponible: pedirle al usuario que cree el website y pausar hasta confirmación.
+
+**Verificar creación** vía Hostinger MCP (si está configurado) o SSH:
+```bash
+# SSH
+ssh -p 65002 -i ~/.ssh/id_ed25519 u925954286@88.223.84.32 \
+  "ls -d /home/u925954286/domains/nog<NOG>.licitacionesgt.com/public_html 2>&1"
+```
+Con MCP Hostinger: llamar al tool `list-websites` y confirmar que aparece.
 
 Verificar por SSH que la ruta existe antes de seguir:
 ```bash
