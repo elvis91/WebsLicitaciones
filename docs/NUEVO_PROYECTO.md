@@ -5,9 +5,11 @@ Pasos reproducibles para publicar un sitio de transparencia para un contrato nue
 ## 0. Prerrequisitos
 
 - Acceso SSH Hostinger con llave ed25519 (`~/.ssh/id_ed25519`)
-- Acceso Cloudflare (API token o panel) a la zona `licitacionesgt.com`
+- Acceso al panel de Hostinger (para crear el website)
 - PDF del contrato + fotos organizadas por fecha
 - NOG del proceso en GUATECOMPRAS
+
+El dominio `licitacionesgt.com` está en **nameservers de Hostinger**, así que no hay que tocar Cloudflare ni DNS externo.
 
 ## 1. Extraer datos del contrato
 
@@ -65,13 +67,15 @@ bash scripts/deploy_new_site.sh <subdominio> <ruta_proyecto_local>
 
 Sube `default.php` y todas las carpetas `imagenes/YYYY-MM-DD/`.
 
-## 6. DNS en Cloudflare
+## 6. SSL
 
-1. Crear/editar registro **A** → `nog<NOG>` → `88.223.84.32` → **Proxy: DNS only** (nube gris).
-2. Esperar ~2 minutos: Hostinger emite SSL Let's Encrypt automáticamente.
-3. Verificar: `curl -sI https://nog<NOG>.<dominio> | head -1` → `200 OK`.
-4. Activar **Proxy: Proxied** (nube naranja).
-5. SSL/TLS mode de la zona debe estar en **Full (strict)**.
+Hostinger emite el certificado Let's Encrypt automáticamente al crear el website (paso 4). No hay que tocar DNS manualmente.
+
+Esperar 1–3 minutos y verificar:
+```bash
+curl -sI https://nog<NOG>.licitacionesgt.com | head -1
+```
+Debe devolver `HTTP/2 200`.
 
 ## 7. Verificación final
 

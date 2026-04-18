@@ -52,10 +52,14 @@ bash scripts/deploy_new_site.sh nog<NOG>.licitacionesgt.com ./proyectos/<nog>
 ```
 Esto sube `default.php` y todas las carpetas `imagenes/YYYY-MM-DD/`.
 
-### 6. DNS en Cloudflare (zona `licitacionesgt.com`)
-1. Crear registro **A**: `nog<NOG>` → `88.223.84.32` → **Proxy: DNS only** (nube gris).
-2. Polling `curl -sI https://nog<NOG>.licitacionesgt.com | head -1` hasta `200 OK` (Hostinger emite Let's Encrypt en ~2 min).
-3. Cambiar proxy a **Proxied** (nube naranja). SSL/TLS mode de la zona debe estar en **Full (strict)**.
+### 6. DNS y SSL
+El dominio `licitacionesgt.com` usa **nameservers de Hostinger**, por lo que al agregar el website en el paso 4 Hostinger crea el registro A automáticamente y emite SSL Let's Encrypt.
+
+No hay Cloudflare ni DNS externo que tocar. Solo verificar:
+```bash
+until curl -sI https://nog<NOG>.licitacionesgt.com | grep -q "200"; do sleep 10; done
+```
+Suele tardar 1–3 minutos desde la creación del website.
 
 ### 7. Verificación y registro
 ```bash

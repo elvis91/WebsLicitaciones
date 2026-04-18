@@ -5,7 +5,7 @@ Sistema de sitios web de transparencia para obra pública en Guatemala. Publica 
 - **Sitios en producción:** 34+ bajo `nogXXXXXXXX.licitacionesgt.com` (dominio estándar para sitios nuevos)
 - **Stack:** PHP (sin framework) + Leaflet.js + HLS.js
 - **Hosting:** Hostinger Business (shared) — SSH `88.223.84.32:65002`, usuario `u925954286`
-- **DNS/CDN:** Cloudflare (proxy ON, Full strict SSL)
+- **DNS:** Nameservers de Hostinger (SSL Let's Encrypt automático al crear el website)
 - **Notion master:** [🏗️ Tecnosis — Sitios Web de Transparencia](https://www.notion.so/342a31f82a7c81098503fb4d6b034652)
 
 ## Estructura del repo
@@ -25,8 +25,7 @@ Ver [`docs/NUEVO_PROYECTO.md`](docs/NUEVO_PROYECTO.md). Resumen:
 1. Crear subdominio en Hostinger (onboarding → quick-install empty).
 2. Copiar `template/default.php`, editar bloque de configuración (NOG, contrato, renglones, coordenadas).
 3. `scp` del `default.php` + carpeta `imagenes/YYYY-MM-DD/`.
-4. Apuntar DNS a Hostinger en Cloudflare (proxy OFF).
-5. Esperar SSL Let's Encrypt (~2 min) → proxy ON Full(strict).
+4. Esperar 1–3 min a que Hostinger emita SSL y verificar `https://nog<NOG>.licitacionesgt.com` → 200.
 
 ## Scripts
 
@@ -39,8 +38,7 @@ Ver [`docs/NUEVO_PROYECTO.md`](docs/NUEVO_PROYECTO.md). Resumen:
 |---|---|
 | SSH Hostinger | `ssh -p 65002 u925954286@88.223.84.32` |
 | Path dominios | `/home/u925954286/domains/<subdominio>/public_html/` |
-| Cloudflare zone | `licitacionesgt.com` |
-| Registro A | `88.223.84.32` |
+| DNS | Gestionado por Hostinger (nameservers de Hostinger en el registrador) |
 
 ## Licencia
 
