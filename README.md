@@ -2,7 +2,7 @@
 
 Sistema de sitios web de transparencia para obra pública en Guatemala. Publica avance físico de contratos conforme al **Art. 89 del Decreto 36-2024**, enlazados desde GUATECOMPRAS.
 
-- **Sitios en producción:** 36+ bajo `nogXXXXXXXX.licitacionesgt.com` y `nogXXXXXXXX.tecnosis.org`
+- **Sitios en producción:** 34+ bajo `nogXXXXXXXX.licitacionesgt.com` (dominio estándar para sitios nuevos)
 - **Stack:** PHP (sin framework) + Leaflet.js + HLS.js
 - **Hosting:** Hostinger Business (shared) — SSH `88.223.84.32:65002`, usuario `u925954286`
 - **DNS/CDN:** Cloudflare (proxy ON, Full strict SSL)
@@ -39,7 +39,7 @@ Ver [`docs/NUEVO_PROYECTO.md`](docs/NUEVO_PROYECTO.md). Resumen:
 |---|---|
 | SSH Hostinger | `ssh -p 65002 u925954286@88.223.84.32` |
 | Path dominios | `/home/u925954286/domains/<subdominio>/public_html/` |
-| Cloudflare zones | `tecnosis.org`, `licitacionesgt.com` |
+| Cloudflare zone | `licitacionesgt.com` |
 | Registro A | `88.223.84.32` |
 
 ## Licencia

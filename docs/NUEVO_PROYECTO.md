@@ -5,7 +5,7 @@ Pasos reproducibles para publicar un sitio de transparencia para un contrato nue
 ## 0. Prerrequisitos
 
 - Acceso SSH Hostinger con llave ed25519 (`~/.ssh/id_ed25519`)
-- Acceso Cloudflare (API token o panel) a la zona `licitacionesgt.com` o `tecnosis.org`
+- Acceso Cloudflare (API token o panel) a la zona `licitacionesgt.com`
 - PDF del contrato + fotos organizadas por fecha
 - NOG del proceso en GUATECOMPRAS
 
@@ -53,7 +53,7 @@ cp template/default.php proyectos/<nog>/default.php
 
 ## 4. Crear el subdominio en Hostinger
 
-Panel → Websites → **Add website** (dropdown) → **Empty website** → dominio `nog<NOG>.licitacionesgt.com` (o `.tecnosis.org`) → **Use it**.
+Panel → Websites → **Add website** (dropdown) → **Empty website** → dominio `nog<NOG>.licitacionesgt.com` → **Use it**.
 
 Esto crea `/home/u925954286/domains/<subdominio>/public_html/`.
 
