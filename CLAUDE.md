@@ -51,6 +51,20 @@ Si falla → detenerse y pedir que el usuario valide la llave. Si devuelve un n�
 - **No pedir confirmación** para: conexiones SSH de solo lectura, `mkdir`, `scp` de archivos nuevos, lectura de PDFs, lectura Notion, generar `default.php` local.
 - **Sí pedir confirmación** solo para: sobrescribir un `default.php` ya existente en producción, borrar fotos remotas, cambios que afecten sitios en producción fuera del NOG actual.
 
+## Disparador secundario: solo fotos nuevas
+
+Si el usuario dice "subí estas fotos al sitio del NOG X" o menciona una carpeta con fecha sin PDFs, **NO ejecutar el flujo completo**. Solo correr:
+
+```bash
+# Una carpeta con fecha en el nombre:
+bash scripts/upload_photos.sh <NOG> "<carpeta>"
+
+# Varios proyectos a la vez (carpeta raíz con subcarpetas NOG → YYYY-MM-DD):
+bash scripts/sync_photos_batch.sh "<carpeta_raiz>"
+```
+
+El batch salta carpetas de fecha ya sincronizadas (compara conteo local vs remoto).
+
 ## Disparador
 
 El usuario sube/menciona uno o más **PDFs de contrato administrativo** (típicamente con formato `NNNNNNNN Contrato XX-AAAA ... .pdf`, donde `NNNNNNNN` es el NOG) y además puede indicar una carpeta con **fotos organizadas por fecha**.
