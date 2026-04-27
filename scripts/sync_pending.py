@@ -24,23 +24,31 @@ for d in domains:
 print(f"Dominios remotos: {len(nog_to_domain)}")
 
 # 2. Encontrar carpetas de proyecto locales (con NOG en el nombre)
+# Reglas: ignorar cualquier ruta bajo una carpeta "Terminados" (proyectos archivados).
+TERMINADOS_RE = re.compile(r'(?i)terminad[oa]s?')
+
+def is_terminado(path: Path) -> bool:
+    return any(TERMINADOS_RE.fullmatch(part) for part in path.parts)
+
 years = [p for p in ROME.iterdir() if p.is_dir() and re.match(r'^20\d{2}$', p.name)]
 projects = []
 for year in years:
     for sub in year.iterdir():
         if not sub.is_dir(): continue
+        if is_terminado(sub): continue
         m = NOG_RE.search(sub.name)
         if m:
             projects.append((m.group(1), sub))
         else:
-            # Mes intermedio (Enero, Febrero...)
+            # Mes intermedio (Enero, Febrero, Diciembre, Terminados...)
             for sub2 in sub.iterdir():
                 if not sub2.is_dir(): continue
+                if is_terminado(sub2): continue
                 m2 = NOG_RE.search(sub2.name)
                 if m2:
                     projects.append((m2.group(1), sub2))
 
-print(f"Proyectos locales con NOG: {len(projects)}")
+print(f"Proyectos locales con NOG (activos): {len(projects)}")
 
 # 3. Por proyecto, comparar y subir
 total_uploaded = 0
@@ -51,7 +59,7 @@ for nog, proj_path in projects:
     domain = nog_to_domain.get(nog)
     if not domain:
         total_skipped_no_site += 1
-        report.append(f"  ⚠️  NOG {nog} sin sitio remoto ({proj_path.name})")
+        report.append(f"  ⚠️  NOG {nog} sin sitio remoto — posible candidato a archivar en Terminados ({proj_path.relative_to(ROME)})")
         continue
 
     # Listar carpetas de fecha locales
