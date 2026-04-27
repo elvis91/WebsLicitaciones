@@ -62,13 +62,33 @@ for nog, proj_path in projects:
         report.append(f"  ⚠️  NOG {nog} sin sitio remoto — posible candidato a archivar en Terminados ({proj_path.relative_to(ROME)})")
         continue
 
-    # Listar carpetas de fecha locales
+    # Listar carpetas de fecha locales (recursivo: detecta subcarpetas anidadas)
+    DATE_LOOSE_RE = re.compile(r'(\d{4})-(\d{2})-(\d{2})|(\d{1,2})[-_/](\d{1,2})[-_/](\d{4})')
+
+    def detect_date(name: str):
+        if DATE_RE.match(name): return name
+        m = DATE_LOOSE_RE.search(name)
+        if m:
+            if m.group(1):
+                return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+            return f"{m.group(6)}-{int(m.group(5)):02d}-{int(m.group(4)):02d}"
+        return None
+
     local_dates = {}
-    for d in proj_path.iterdir():
-        if d.is_dir() and DATE_RE.match(d.name):
-            files = [f for f in d.iterdir() if f.is_file() and f.suffix in EXTS]
-            if files:
-                local_dates[d.name] = files
+    issues = []
+    for d in proj_path.rglob('*'):
+        if not d.is_dir(): continue
+        if any(TERMINADOS_RE.fullmatch(p) for p in d.parts): continue
+        date = detect_date(d.name)
+        if not date: continue
+        files = [f for f in d.iterdir() if f.is_file() and f.suffix in EXTS]
+        if not files: continue
+        if d.name != date:
+            issues.append(f"    ⚠️  carpeta '{d.name}' detectada como {date} (renombrar)")
+        if date in local_dates:
+            local_dates[date].extend(files)
+        else:
+            local_dates[date] = list(files)
 
     if not local_dates: continue
 
@@ -103,8 +123,9 @@ for nog, proj_path in projects:
         else:
             proj_lines.append(f"    ❌ {date}: error scp — {result.stderr.strip()[:100]}")
 
-    if proj_lines:
+    if proj_lines or issues:
         report.append(f"\n📂 NOG {nog} → {domain}")
+        report.extend(issues)
         report.extend(proj_lines)
         total_uploaded += proj_uploaded
 
